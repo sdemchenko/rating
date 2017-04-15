@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Калькулятор рейтинга ФНТУ</title>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <script language="JavaScript" title="BUSINESS LOGIC">
+
+        function Match(opponentRating, iWon) {
+            this.iWon = iWon;
+            this.opponentRating = opponentRating;
+
+            this.toString = function () {
+                return "[their rating " + this.opponentRating + " - I " + (this.iWon ? "won" : "lost") + "]";
+            }
+        }
+
+        function RatingCalculator(myInitialRating, myInitialWeight, myMatches, contestFactor) {
+
+            /* Instance methods */
+
+            this.getContribution = function (match) {
+                if (match.iWon) {
+                    if (match.opponentRating <= 0) {
+                        return 0;
+                    }
+                    if (this.initialRating >= match.opponentRating) { // I won a weaker contestant
+                        if (this.initialRating - match.opponentRating <= 2.0) {
+                            return 2;
+                        } else if (this.initialRating - match.opponentRating <= 20.0) {
+                            return 1;
+                        } else {
+                            return 0; // huge difference, so I get nothing
+                        }
+                    } else { // I won a stronger contestant
+                        return Math.round((match.opponentRating - this.initialRating + 5.0) / 3.0);
+                    }
+                } else {
+                    if (this.initialRating <= 0) {
+                        return 0;
+                    }
+                    if (this.initialRating <= match.opponentRating) {  // I lost to a stronger contestant
+                        if (match.opponentRating - this.initialRating <= 2.0) {
+                            return -2;
+                        } else if (match.opponentRating - this.initialRating <= 20.0) {
+                            return -1;
+                        } else {
+                            return 0; // huge difference, so I lose nothing
+                        }
+                    } else { // I lost to a weaker contestant
+                        return -Math.round((this.initialRating - match.opponentRating + 5.0) / 3.0);
+                    }
+                }
+            };
+
+            this.getClosingContribution = function () {
+                var contribution = 0;
+                for (var i = 0; i < this.matches.length; i++) {
+                    contribution += this.getContribution(this.matches[i]);
+                }
+                return contribution;
+            };
+
+            this.getClosingWeight = function () {
+                return this.initialWeight + this.getContestWeight();
+            };
+
+            this.getClosingRating = function () {
+                return Math.max(0, this.initialRating + this.getClosingRatingDelta());
+            };
+
+            this.getClosingRatingDelta = function () {
+                if (RatingCalculator.round(this.initialWeight) === 0 && RatingCalculator.round(this.getContestWeight()) === 0) {
+                    return 0;
+                }
+                return this.contestFactor * this.getClosingContribution() * 10 / Math.min(40, this.initialWeight + this.getContestWeight());
+            };
+
+            this.getContestWeight = function () {
+                var weight = 0;
+                for (var i = 0; i < this.matches.length; i++) {
+                    weight += Math.abs(this.getContribution(this.matches[i]));
+                }
+                return Math.min(20, weight);
+            };
+
+            /** Base rating ('опорный рейтинг'). */
+            this.getBaseRating = function () {
+                var minimumRatingILostTo = 0;
+                var maximumRatingIWon = 0;
+                var iWonAtLeastOnce = false;
+                var iLostAtLeastOnce = false;
+                for (var i = 0; i < this.matches.length; i++) {
+                    if (this.matches[i].iWon) {
+                        if (iWonAtLeastOnce) {
+                            maximumRatingIWon = Math.max(this.matches[i].opponentRating, maximumRatingIWon);
+                        } else {
+                            maximumRatingIWon = this.matches[i].opponentRating;
+                            iWonAtLeastOnce = true;
+                        }
+                    } else {
+                        if (iLostAtLeastOnce) {
+                            minimumRatingILostTo = Math.min(this.matches[i].opponentRating, minimumRatingILostTo);
+                        } else {
+                            minimumRatingILostTo = this.matches[i].opponentRating;
+                            iLostAtLeastOnce = true;
+                        }
+
+                    }
+                }
+                if (iWonAtLeastOnce) {
+                    return iLostAtLeastOnce ? Math.min(minimumRatingILostTo, maximumRatingIWon) : maximumRatingIWon;
+                } else {
+                    return 0;
+                }
+            };
+
+            this.toString = function () {
+                return "RatingCalculator[" +
+                    "\n    initialRating: " + this.initialRating +
+                    "\n    initialWeight: " + this.initialWeight +
+                    "\n    matches: " + this.matches +
+                    "\n    contestFactor: " + this.contestFactor +
+                    "\n    getContestWeight: " + this.getContestWeight() +
+                    "\n    getClosingWeight: " + this.getClosingWeight() +
+                    "\n    getClosingContribution: " + this.getClosingContribution() +
+                    "\n    getClosingRatingDelta: " + RatingCalculator.round(this.getClosingRatingDelta()) +
+                    "\n    getClosingRating: " + RatingCalculator.round(this.getClosingRating()) +
+                    "\n]";
+            };
+
+            /* Static methods */
+            RatingCalculator.round = function (rating) {
+                return Math.round(rating * 10) / 10;
+            };
+
+
+            /* Instance initialization */
+            this.matches = myMatches;
+            this.contestFactor = contestFactor;
+            if (myInitialRating <= 0) {
+                this.initialRating = this.getBaseRating();
+                this.initialWeight = 0;
+            } else {
+                this.initialRating = myInitialRating;
+                this.initialWeight = myInitialWeight;
+            }
+
+        }
+
+    </script>
+    <script language="JavaScript" title="TESTS FOR BUSINESS LOGIC">
+
+        (function () {
+            var delta = 0.00001;
+            var calculator;
+
+            calculator = new RatingCalculator(
+                28.7,
+                35,
+                [new Match(12.0, true), new Match(18.7, true), new Match(25.9, false), new Match(38.4, false), new Match(33.8, false), new Match(39.8, false), new Match(18.7, false)],
+                1.2
+            );
+
+            assert(13 === calculator.getContestWeight());
+            assert(48 === calculator.getClosingWeight());
+            assert(-9 === calculator.getClosingContribution());
+            assert(-2.7 === RatingCalculator.round(calculator.getClosingRatingDelta()));
+            assert(26.0 === RatingCalculator.round(calculator.getClosingRating()));
+
+
+            calculator = new RatingCalculator(
+                26.0,
+                48,
+                [
+                    new Match(18.5, false), new Match(37.4, false), new Match(43.0, false), new Match(25.8, false), new Match(53.4, false), new Match(43.3, true),
+                    new Match(29.1, false), new Match(38.6, true), new Match(32.6, false), new Match(24.2, true), new Match(20.5, true)],
+                1.2
+            );
+
+            assert(20 === calculator.getContestWeight());
+            assert(68 === calculator.getClosingWeight());
+            assert(6 === calculator.getClosingContribution());
+            assert(1.8 === RatingCalculator.round(calculator.getClosingRatingDelta()));
+            assert(27.8 === RatingCalculator.round(calculator.getClosingRating()));
+
+
+            calculator = new RatingCalculator(
+                0.0,
+                0,
+                [
+                    new Match(10.4, false), new Match(6.3, false), new Match(6.3, false), new Match(10.6, true), new Match(13.0, true), new Match(0, true), new Match(0, true)],
+                1.0
+            );
+
+            assert(12 === calculator.getClosingWeight());
+            assert(8.0 === RatingCalculator.round(calculator.getClosingRating()));
+
+
+            calculator = new RatingCalculator(
+                10.8,
+                8,
+                [
+                    new Match(0.2, true), new Match(0.7, true), new Match(8.9, false), new Match(1.7, true), new Match(2.1, true), new Match(0.2, true),
+                    new Match(0.2, true), new Match(5.5, false), new Match(4.5, true), new Match(2.1, false), new Match(15.7, true), new Match(14.8, false),
+                    new Match(0.2, false), new Match(1.7, false), new Match(13.8, true), new Match(20.4, false), new Match(8.9, false), new Match(0, true), new Match(23.4, false)
+                ],
+                1.0
+            );
+            alert(calculator);
+            assert(28 === calculator.getClosingWeight());
+            assert(6.5 === RatingCalculator.round(calculator.getClosingRating()));
+        })();
+
+        function assert(condition, message) {
+            if (!condition) {
+                message = message || "Assertion failed";
+                if (typeof Error !== "undefined") {
+                    throw new Error(message);
+                }
+                throw message; // Fallback
+            }
+        }
+    </script>
+
+    <script language="JavaScript"  title="PAGE LOGIC">
+
+        function deleteMatch(el) {
+            if ($(".match").length > 1) {
+                $(el).parent().remove();
+            }
+        }
+
+        function addMatch(el) {
+            var opponent = $(el).prev().clone();
+            opponent.find("input[name='opponentName']").val('');
+            opponent.find("input[name='opponentRating']").val('0.0');
+            opponent.find("input[name='iWon']").prop("checked", "checked");
+            $(el).before(opponent);
+        }
+
+        function fixDecimalPointLocale(val) {
+            return +(val.replace(",", "."));
+        }
+
+        function calculateRating() {
+            var matches = [];
+            $(".match").each(function (index) {
+                matches.push(new Match(
+                    fixDecimalPointLocale($(this).find("input[name='opponentRating']").val()),
+                    $(this).find("input[name='iWon']").prop("checked"))
+                );
+            });
+
+            var rating = new RatingCalculator(
+                fixDecimalPointLocale($("#initialRating").val()),
+                fixDecimalPointLocale($("#initialWeight").val()),
+                matches,
+                fixDecimalPointLocale($("#contestFactor").val())
+            );
+
+            $("#initialRating").val(RatingCalculator.round(rating.initialRating));
+            $("#initialWeight").val(RatingCalculator.round(rating.initialWeight));
+            $("#closingRating").val(RatingCalculator.round(rating.getClosingRating()));
+            $("#closingRatingDelta").val(RatingCalculator.round(rating.getClosingRatingDelta()));
+            $("#closingWeight").val(rating.getClosingWeight());
+        }
+    </script>
+
+    <style type="text/css">
+        .short {
+            width: 40px;
+        }
+
+        .input {
+            float: right;
+        }
+
+        .label {
+            display: block;
+            width: 250px;
+        }
+
+        h1, h2 {margin-top: 50px;}
+
+    </style>
+
+</head>
+<body>
+<div style="width:650px; margin:0 auto;">
+    <h1>Калькулятор рейтинга по правилам ФНТУ</h1>
+    <div>
+        <label class="label">Начальный рейтинг: <input id="initialRating" name="initialRating" value="0.0" class="short input"></label><br/>
+        <label class="label">Начальный вес: <input id="initialWeight" name="initialWeight" value="0" class="short input"></label><br/>
+        <label class="label">Коэффициент соревнований: <input id="contestFactor" name="contestFactor" value="1.0" class="short input"></label><br/>
+        <h2>Соперники:</h2>
+        <div class="match">
+            <label>Имя/Фамилия: <input name="opponentName"></label>,
+            <label>рейтинг: <input name="opponentRating" value="0.0" class="short"></label>,
+            <label><input type="checkbox" name="iWon" checked="checked">я выиграл</label>
+            <input type="button" name="delete_match" style="margin-left: 20px" value="Удалить" onclick="deleteMatch(this)"/>
+        </div>
+
+        <input type="button" name="add_opponent" value="Добавить соперника" onclick="addMatch(this)" style="margin-top: 10px; width: 150px" /><br/>
+        <input type="button" name="calculateRating" id="calculateRating" value="Рассчитать рейтинг" onclick="calculateRating()" style="margin-top: 40px; margin-bottom: 40px; width: 150px"/><br/>
+        <label class="label">Текущий рейтинг: <input type="text" readonly="readonly" id="closingRating" class="short input"/></label><br/>
+        <label class="label">Добавка к рейтингу: <input type="text" readonly="readonly" id="closingRatingDelta" class="short input"/></label><br/>
+        <label class="label">Текущий вес: <input type="text" readonly="readonly" id="closingWeight" class="short input"/></label>
+    </div>
+    <ol style="margin-top: 70px; margin-bottom: 70px">Справочные материалы:
+        <li><a href="http://reiting.com.ua/rating/about/">Правила расчета рейтинга в настольном теннисе.</a></li>
+        <li><a href="http://www.tt-energy.com/112-schitaem-reiting-sami-ili-zachem-na-sorevnovaniiakh-ruchka-i-tetrad.html">Считаем рейтинг сами или Зачем на соревнованиях ручка и тетрадь.</a></li>
+        <li><a href="http://scyalta.ru/home/item/495.html">Как рассчитать свой рейтинг или «Калькулятор рейтинга»</a></li>
+    </ol>
+    (c) 2017, Stanislav Demchenko
+</div>
+
+</body>
+</html>
