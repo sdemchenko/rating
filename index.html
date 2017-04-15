@@ -233,12 +233,13 @@
             }
         }
 
-        function addMatch(el) {
-            var opponent = $(el).prev().clone();
-            opponent.find("input[name='opponentName']").val('');
-            opponent.find("input[name='opponentRating']").val('0.0');
-            opponent.find("input[name='iWon']").prop("checked", "checked");
-            $(el).before(opponent);
+        function addMatch() {
+            var buttonBeforeLastOpponent = $("input[name='add_opponent']");
+            var divOpponentClone = $(buttonBeforeLastOpponent).prev().clone();
+            divOpponentClone.find("input[name='opponentName']").val('');
+            divOpponentClone.find("input[name='opponentRating']").val('0.0');
+            divOpponentClone.find("input[name='iWon']").prop("checked", "checked");
+            $(buttonBeforeLastOpponent).before(divOpponentClone);
         }
 
         function fixDecimalPointLocale(val) {
@@ -283,7 +284,7 @@
             width: 250px;
         }
 
-        h1, h2 {margin-top: 50px;}
+        h1, h2 {margin-top: 40px;}
 
     </style>
 
@@ -294,17 +295,16 @@
     <div>
         <label class="label">Начальный рейтинг: <input id="initialRating" name="initialRating" value="0.0" class="short input"></label><br/>
         <label class="label">Начальный вес: <input id="initialWeight" name="initialWeight" value="0" class="short input"></label><br/>
-        <label class="label">Коэффициент соревнований: <input id="contestFactor" name="contestFactor" value="1.0" class="short input"></label><br/>
+        <label class="label">Коэффициент соревнований: <input id="contestFactor" name="contestFactor" value="1.0" class="short input"></label>
         <h2>Соперники:</h2>
         <div class="match">
             <label>Имя/Фамилия: <input name="opponentName"></label>,
             <label>рейтинг: <input name="opponentRating" value="0.0" class="short"></label>,
             <label><input type="checkbox" name="iWon" checked="checked">я выиграл</label>
-            <input type="button" name="delete_match" style="margin-left: 20px" value="Удалить" onclick="deleteMatch(this)"/>
+            <input type="button" name="delete_match" style="margin-left: 30px" value="Удалить" onclick="deleteMatch(this)"/>
         </div>
-
-        <input type="button" name="add_opponent" value="Добавить соперника" onclick="addMatch(this)" style="margin-top: 10px; width: 150px" /><br/>
-        <input type="button" name="calculateRating" id="calculateRating" value="Рассчитать рейтинг" onclick="calculateRating()" style="margin-top: 40px; margin-bottom: 40px; width: 150px"/><br/>
+        <input type="button" name="add_opponent" value="Добавить соперника" onclick="addMatch()" style="margin-top: 10px; width: 150px" /><br/>
+        <input type="button" name="calculateRating" id="calculateRating" value="Рассчитать рейтинг" onclick="calculateRating()" style="margin-top: 40px; margin-bottom: 20px; width: 150px"/><br/>
         <label class="label">Текущий рейтинг: <input type="text" readonly="readonly" id="closingRating" class="short input"/></label><br/>
         <label class="label">Добавка к рейтингу: <input type="text" readonly="readonly" id="closingRatingDelta" class="short input"/></label><br/>
         <label class="label">Текущий вес: <input type="text" readonly="readonly" id="closingWeight" class="short input"/></label>
@@ -316,6 +316,13 @@
     </ol>
     (c) 2017, Stanislav Demchenko
 </div>
-
 </body>
+<script language="JavaScript">
+
+    /* Create a few opponents more to spare the user extra clicks. */
+    for (var i = 0; i < 4; i++) {
+        addMatch();
+    }
+
+</script>
 </html>
