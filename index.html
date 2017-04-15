@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Калькулятор рейтинга ФНТУ</title>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-    <script language="JavaScript" title="BUSINESS LOGIC">
+    <script type="text/javascript" title="BUSINESS LOGIC">
 
         function Match(opponentRating, iWon) {
             this.iWon = iWon;
@@ -151,10 +151,10 @@
         }
 
     </script>
-    <script language="JavaScript" title="TESTS FOR BUSINESS LOGIC">
+
+    <script type="text/javascript" title="TESTS FOR BUSINESS LOGIC">
 
         (function () {
-            var delta = 0.00001;
             var calculator;
 
             calculator = new RatingCalculator(
@@ -225,7 +225,7 @@
         }
     </script>
 
-    <script language="JavaScript"  title="PAGE LOGIC">
+    <script type="text/javascript" title="PAGE LOGIC">
 
         function deleteMatch(el) {
             if ($(".match").length > 1) {
@@ -235,11 +235,11 @@
 
         function addMatch() {
             var buttonBeforeLastOpponent = $("input[name='add_opponent']");
-            var divOpponentClone = $(buttonBeforeLastOpponent).prev().clone();
+            var divOpponentClone = buttonBeforeLastOpponent.prev().clone();
             divOpponentClone.find("input[name='opponentName']").val('');
             divOpponentClone.find("input[name='opponentRating']").val('0.0');
             divOpponentClone.find("input[name='iWon']").prop("checked", "checked");
-            $(buttonBeforeLastOpponent).before(divOpponentClone);
+            buttonBeforeLastOpponent.before(divOpponentClone);
         }
 
         function fixDecimalPointLocale(val) {
@@ -248,7 +248,7 @@
 
         function calculateRating() {
             var matches = [];
-            $(".match").each(function (index) {
+            $(".match").each(function () {
                 matches.push(new Match(
                     fixDecimalPointLocale($(this).find("input[name='opponentRating']").val()),
                     $(this).find("input[name='iWon']").prop("checked"))
@@ -268,6 +268,7 @@
             $("#closingRatingDelta").val(RatingCalculator.round(rating.getClosingRatingDelta()));
             $("#closingWeight").val(rating.getClosingWeight());
         }
+
     </script>
 
     <style type="text/css">
@@ -284,30 +285,33 @@
             width: 250px;
         }
 
-        h1, h2 {margin-top: 40px;}
-
+        h1, h2 {
+            margin-top: 40px;
+        }
     </style>
-
 </head>
 <body>
 <div style="width:650px; margin:0 auto;">
     <h1>Калькулятор рейтинга по правилам ФНТУ</h1>
+    <!--[if IE]>
+    <span style="color: red; ">Калькулятор может не работать в Internet Explorer. Пщпробуйте Google Chrome.</span><br/><br/>
+    <![endif]-->
     <div>
-        <label class="label">Начальный рейтинг: <input id="initialRating" name="initialRating" value="0.0" class="short input"></label><br/>
-        <label class="label">Начальный вес: <input id="initialWeight" name="initialWeight" value="0" class="short input"></label><br/>
-        <label class="label">Коэффициент соревнований: <input id="contestFactor" name="contestFactor" value="1.0" class="short input"></label>
+        <label class="label">Начальный рейтинг: <input id="initialRating" name="initialRating" value="0.0" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Начальный вес: <input id="initialWeight" name="initialWeight" value="0" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Коэффициент соревнований: <input id="contestFactor" name="contestFactor" value="1.0" class="short input" autocomplete="off"/></label>
         <h2>Соперники:</h2>
         <div class="match">
-            <label>Имя/Фамилия: <input name="opponentName"></label>,
-            <label>рейтинг: <input name="opponentRating" value="0.0" class="short"></label>,
-            <label><input type="checkbox" name="iWon" checked="checked">я выиграл</label>
+            <label>Имя/Фамилия: <input name="opponentName"/></label>,
+            <label>рейтинг: <input name="opponentRating" value="0.0" class="short" autocomplete="off"/></label>,
+            <label><input type="checkbox" name="iWon" checked="checked" autocomplete="off"/>я выиграл</label>
             <input type="button" name="delete_match" style="margin-left: 30px" value="Удалить" onclick="deleteMatch(this)"/>
         </div>
         <input type="button" name="add_opponent" value="Добавить соперника" onclick="addMatch()" style="margin-top: 10px; width: 150px" /><br/>
         <input type="button" name="calculateRating" id="calculateRating" value="Рассчитать рейтинг" onclick="calculateRating()" style="margin-top: 40px; margin-bottom: 20px; width: 150px"/><br/>
-        <label class="label">Текущий рейтинг: <input type="text" readonly="readonly" id="closingRating" class="short input"/></label><br/>
-        <label class="label">Добавка к рейтингу: <input type="text" readonly="readonly" id="closingRatingDelta" class="short input"/></label><br/>
-        <label class="label">Текущий вес: <input type="text" readonly="readonly" id="closingWeight" class="short input"/></label>
+        <label class="label">Текущий рейтинг: <input type="text" readonly="readonly" id="closingRating" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Добавка к рейтингу: <input type="text" readonly="readonly" id="closingRatingDelta" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Текущий вес: <input type="text" readonly="readonly" id="closingWeight" class="short input" autocomplete="off"/></label>
     </div>
     <ol style="margin-top: 70px; margin-bottom: 70px">Справочные материалы:
         <li><a href="http://reiting.com.ua/rating/about/">Правила расчета рейтинга в настольном теннисе.</a></li>
@@ -317,10 +321,10 @@
     (c) 2017, Stanislav Demchenko
 </div>
 </body>
-<script language="JavaScript">
+<script type="text/javascript" title="PAGE LOGIC">
 
     /* Create a few opponents more to spare the user extra clicks. */
-    for (var i = 0; i < 4; i++) {
+    for (var i = 0; i < 5; i++) {
         addMatch();
     }
 
