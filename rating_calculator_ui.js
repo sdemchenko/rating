@@ -6,12 +6,12 @@ function deleteMatch(el) {
 }
 
 function addMatch() {
-    var buttonBeforeLastOpponent = $("input[name='add_opponent']");
-    var divOpponentClone = buttonBeforeLastOpponent.prev().clone();
-    divOpponentClone.find("input[name='opponentName']").val('');
-    divOpponentClone.find("input[name='opponentRating']").val('0.0');
-    divOpponentClone.find("input[name='iWon']").prop("checked", "checked");
-    buttonBeforeLastOpponent.before(divOpponentClone);
+    var lastMatch = $(".match:last");
+    var lastMatchClone = lastMatch.clone();
+    lastMatchClone.find("input[name='opponentName']").val('');
+    lastMatchClone.find("input[name='opponentRating']").val('0.0');
+    lastMatchClone.find("input[name='iWon']").prop("checked", "checked");
+    lastMatch.after(lastMatchClone);
 }
 
 function fixDecimalPointLocale(val) {
@@ -40,3 +40,13 @@ function calculateRating() {
     $("#closingRatingDelta").val(RatingCalculator.round(rating.getClosingRatingDelta()));
     $("#closingWeight").val(rating.getClosingWeight());
 }
+
+/* Create a few opponents more to spare the user extra clicks. */
+stateCheck = setInterval(function () {
+    if (document.readyState === 'complete') {
+        clearInterval(stateCheck);
+        for (var i = 0; i < 5; i++) {
+            addMatch();
+        }
+    }
+}, 100);
