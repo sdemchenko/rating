@@ -5,8 +5,10 @@ stateCheckForTtMaster = setInterval(function () {
         clearInterval(stateCheckForTtMaster);
         /* Remove garbage inserted by WordPress */
         $(".match br").remove();
-        /* Replace the first (misaligned) match with a good-looking one. */
+        /* Replace the original (misaligned) match with a good-looking one. */
+        addMatch();
         addMatch();
         $(".match:first").remove();
+        $(".match:last").remove();
     }
 }, 100);
