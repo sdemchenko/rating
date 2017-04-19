@@ -7,6 +7,6 @@ stateCheckForTtMaster = setInterval(function () {
         $(".match br").remove();
         /* Replace the first (misaligned) match with a good-looking one. */
         addMatch();
-        $(".match:first").parent().remove();
+        $(".match:first").remove();
     }
 }, 100);
