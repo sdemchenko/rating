@@ -2,8 +2,8 @@
 <html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="description" content="Калькулятор рейтинга по правилам Федерации настольного тенниса Украины">
-    <title>Калькулятор рейтинга ФНТУ</title>
+    <meta name="description" content="Калькулятор рейтингу за правилами Федерації настільного тенісу України">
+    <title>Калькулятор рейтингу ФНТУ</title>
 
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -32,34 +32,30 @@
 </head>
 <body>
 <div style="width:800px; margin:0 auto;">
-    <h1>Калькулятор рейтинга по правилам ФНТУ</h1>
-    <!--[if IE]>
-    <span style="color: red; ">Калькулятор может не работать в Internet Explorer. Пщпробуйте Google Chrome.</span><br/><br/>
-    <![endif]-->
+    <h1>Калькулятор рейтингу за правилами ФНТУ</h1>
     <div>
-        <label class="label">Начальный рейтинг: <input id="initialRating" name="initialRating" value="0.0" class="short input" autocomplete="off"/></label><br/>
-        <label class="label">Начальный вес: <input id="initialWeight" name="initialWeight" value="0" class="short input" autocomplete="off"/></label><br/>
-        <label class="label">Коэффициент соревнований: <input id="contestFactor" name="contestFactor" value="1.0" class="short input" autocomplete="off"/></label>
-        <h2>Соперники:</h2>
+        <label class="label">Початковий рейтинг: <input id="initialRating" name="initialRating" value="0.0" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Початкова вага: <input id="initialWeight" name="initialWeight" value="0" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Коефіциєнт змагань: <input id="contestFactor" name="contestFactor" value="1.0" class="short input" autocomplete="off"/></label>
+        <h2>Суперники:</h2>
         <div class="match">
-            <label>Имя/Фамилия: <input name="opponentName"/></label>,
+            <label>Імʼя/Прізвище: <input name="opponentName"/></label>,
             <label>рейтинг: <input name="opponentRating" value="0.0" class="short" autocomplete="off"/></label>,
-            <label><input type="checkbox" name="iWon" checked="checked" autocomplete="off"/>я выиграл</label>
-            <input type="button" name="delete_match" style="margin-left: 30px" value="Удалить" onclick="deleteMatch(this)"/>
+            <label><input type="checkbox" name="iWon" checked="checked" autocomplete="off"/>я переміг</label>
+            <input type="button" name="delete_match" style="margin-left: 30px" value="Видалити" onclick="deleteMatch(this)"/>
         </div>
-        <input type="button" name="add_opponent" value="Добавить соперника" onclick="addMatch()" style="margin-top: 10px; width: 150px" /><br/>
+        <input type="button" name="add_opponent" value="Додати суперника" onclick="addMatch()" style="margin-top: 10px; width: 150px" /><br/>
         <input type="button" name="calculateRating" id="calculateRating" value="Рассчитать рейтинг" onclick="calculateRating()" style="margin-top: 40px; margin-bottom: 20px; width: 150px"/><br/>
-        <label class="label">Текущий рейтинг: <input type="text" readonly="readonly" id="closingRating" class="short input" autocomplete="off"/></label><br/>
-        <label class="label">Добавка к рейтингу: <input type="text" readonly="readonly" id="closingRatingDelta" class="short input" autocomplete="off"/></label><br/>
-        <label class="label">Текущий вес: <input type="text" readonly="readonly" id="closingWeight" class="short input" autocomplete="off"/></label>
+        <label class="label">Рейтинг після: <input type="text" readonly="readonly" id="closingRating" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Зміна рейтингу: <input type="text" readonly="readonly" id="closingRatingDelta" class="short input" autocomplete="off"/></label><br/>
+        <label class="label">Вага після: <input type="text" readonly="readonly" id="closingWeight" class="short input" autocomplete="off"/></label>
     </div>
-    <ol style="margin-top: 70px;margin-bottom: 50px">Справочные материалы:
-        <li><a href="http://reiting.com.ua/rating/about/">Правила расчета рейтинга в настольном теннисе.</a></li>
-        <li><a href="http://www.tt-energy.com/112-schitaem-reiting-sami-ili-zachem-na-sorevnovaniiakh-ruchka-i-tetrad.html">Считаем рейтинг сами или Зачем на соревнованиях ручка и тетрадь.</a></li>
-        <li><a href="http://scyalta.ru/home/item/495.html">Как рассчитать свой рейтинг или «Калькулятор рейтинга»</a></li>
+    <ol style="margin-top: 70px;margin-bottom: 50px">Довідкові матеріали:
+        <li><a href="http://www.tt-energy.com/112-schitaem-reiting-sami-ili-zachem-na-sorevnovaniiakh-ruchka-i-tetrad.html">Рахуємо рейтинг самі або Навіщо на змаганнях ручка й зошит.</a></li>
+        <li><a href="https://uttf.com.ua/ranking/men">Рейтинг ФНТУ</a></li>
     </ol>
-    <div style="margin-bottom: 50px"><a href="https://github.com/sdemchenko/rating/issues">Сообщить об ошибке</a></div>
-    (c) 2017, Stanislav Demchenko
+    <div style="margin-bottom: 50px"><a href="https://github.com/sdemchenko/rating/issues">Повідомити про помилку</a></div>
+    (c) 2017-2022, Stanislav Demchenko
 </div>
 </body>
 </html>
