@@ -79,7 +79,7 @@ function RatingCalculator(myInitialRating, myInitialWeight, myMatches, contestFa
         return Math.min(20, weight);
     };
 
-    /** Base rating ('опорный рейтинг'). */
+    /** Base rating ('опорний рейтинг'). */
     this.getBaseRating = function () {
         var minimumRatingILostTo = 0;
         var maximumRatingIWon = 0;
