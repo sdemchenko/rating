@@ -42,11 +42,4 @@ function calculateRating() {
 }
 
 /* Create a few opponents more to spare the user extra clicks. */
-stateCheck = setInterval(function () {
-    if (document.readyState === 'complete') {
-        clearInterval(stateCheck);
-        for (var i = 0; i < 5; i++) {
-            addMatch();
-        }
-    }
-}, 100);
+$(document).ready(() => Array(5).fill().map(addMatch) );
